@@ -19,6 +19,9 @@ struct StoryDetailView: View {
 
     private var story: HNItem { vm.resolvedItem }
 
+    @State private var pinchBaseline: Double?
+    private var textScale: CGFloat { CGFloat(settings.readingTextScale) }
+
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
@@ -33,10 +36,31 @@ struct StoryDetailView: View {
         .navigationTitle(story.host ?? "Discussion")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbar }
+        // Pinch anywhere in the discussion to scale reading text, like the web.
+        .gesture(pinchToZoom)
         .task {
             if settings.markReadOnOpen { readStore.markRead(item.id) }
             await vm.load()
         }
+    }
+
+    private var pinchToZoom: some Gesture {
+        MagnifyGesture()
+            .onChanged { value in
+                let base = pinchBaseline ?? settings.readingTextScale
+                if pinchBaseline == nil { pinchBaseline = base }
+                let proposed = base * value.magnification
+                let clamped = min(SettingsStore.maxTextScale, max(SettingsStore.minTextScale, proposed))
+                // Snap to 0.05 steps to avoid a flood of persisted writes.
+                let snapped = (clamped * 20).rounded() / 20
+                if snapped != settings.readingTextScale {
+                    settings.readingTextScale = snapped
+                }
+            }
+            .onEnded { _ in
+                pinchBaseline = nil
+                Haptics.soft()
+            }
     }
 
     // MARK: Header
@@ -48,7 +72,7 @@ struct StoryDetailView: View {
             }
 
             Text(story.displayTitle)
-                .font(AppFont.articleTitle)
+                .font(.reader(23 * textScale, .bold, relativeTo: .title2))
                 .foregroundStyle(Theme.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityAddTraits(.isHeader)

@@ -54,6 +54,13 @@ struct SettingsView: View {
 
     private func readingSection(_ settings: Bindable<SettingsStore>) -> some View {
         Section("Reading") {
+            Stepper(value: settings.readingTextScale,
+                    in: SettingsStore.minTextScale...SettingsStore.maxTextScale,
+                    step: 0.1) {
+                Label("Text Size — \(Int((settings.wrappedValue.readingTextScale * 100).rounded()))%",
+                      systemImage: "textformat.size")
+            }
+
             Picker(selection: settings.defaultFeed) {
                 ForEach(Feed.allCases) { feed in
                     Label(feed.title, systemImage: feed.systemImage).tag(feed)

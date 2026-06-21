@@ -4,6 +4,13 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-06-21
+
+### Added
+- Adjustable reading text size: a control in Settings and pinch-to-zoom inside a discussion, applied on top of Dynamic Type.
+- Privacy manifest (`PrivacyInfo.xcprivacy`) declaring no tracking, no data collection, and required-reason API usage, for App Store readiness.
+- README privacy section documenting the official-APIs-only, no-account, no-tracking stance.
+
 ## [1.1.0] - 2026-06-20
 
 ### Added
@@ -30,5 +37,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Accessibility: color-independent status cues, VoiceOver labels and custom actions, Dynamic Type, Reduce Motion support, and underlined links.
 - Six accent themes, full light/dark support, haptics, and a generated app icon.
 
+[1.2.0]: https://github.com/DatanoiseTV/ember-hackernews/releases/tag/v1.2.0
 [1.1.0]: https://github.com/DatanoiseTV/ember-hackernews/releases/tag/v1.1.0
 [1.0.0]: https://github.com/DatanoiseTV/ember-hackernews/releases/tag/v1.0.0

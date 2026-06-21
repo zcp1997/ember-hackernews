@@ -7,12 +7,15 @@ struct CommentBlockView: View {
 
     @Environment(SettingsStore.self) private var settings
 
+    private var scale: CGFloat { CGFloat(settings.readingTextScale) }
+    private var bodyFont: Font { .reader(15.5 * scale, .regular, relativeTo: .callout) }
+
     var body: some View {
         switch block {
         case .text(let attributed):
             Text(styled(attributed))
-                .font(AppFont.comment)
-                .lineSpacing(AppFont.readingLineSpacing)
+                .font(bodyFont)
+                .lineSpacing(AppFont.readingLineSpacing * scale)
                 .foregroundStyle(Theme.textPrimary)
                 .textSelection(.enabled)
                 .fixedSize(horizontal: false, vertical: true)
@@ -23,8 +26,8 @@ struct CommentBlockView: View {
                     .fill(settings.accent.color.opacity(0.55))
                     .frame(width: 3)
                 Text(attributed)
-                    .font(AppFont.comment.italic())
-                    .lineSpacing(AppFont.readingLineSpacing)
+                    .font(bodyFont.italic())
+                    .lineSpacing(AppFont.readingLineSpacing * scale)
                     .foregroundStyle(Theme.textSecondary)
                     .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)
@@ -33,7 +36,7 @@ struct CommentBlockView: View {
         case .code(let code):
             ScrollView(.horizontal, showsIndicators: false) {
                 Text(code)
-                    .font(AppFont.mono)
+                    .font(.system(size: 13 * scale, design: .monospaced))
                     .foregroundStyle(Theme.textPrimary)
                     .textSelection(.enabled)
                     .padding(Spacing.m)

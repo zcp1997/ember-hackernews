@@ -33,6 +33,7 @@ iPhone to a three-pane layout on Mac and iPad.
 - **Read tracking** — visited stories are dimmed so you can pick up where you left off.
 - **Runs on the desktop** — the same app runs on Mac (via Mac Catalyst) and large iPad with a native three-pane layout: a source-list sidebar, a story list, and the discussion side by side.
 - **Reading typography** — body and comments are set in Inter with comfortable leading and a constrained measure, so long threads are easy to read.
+- **Adjustable text size** — tune reading text in Settings, or pinch-to-zoom right in a discussion (on top of Dynamic Type).
 - **In-app reading** — open links in an in-app Safari view with optional Reader mode, or hand off to your default browser.
 - **Share** — a standard share button on every story (article or discussion link).
 - **Profiles** — view any user's karma, join date, about, and recent submissions.
@@ -144,6 +145,16 @@ swift Tools/FrameScreenshot.swift in.png docs/screenshots/x.png  # device-framed
 - The comment HTML renderer is a small purpose-built parser for the limited tag set Hacker News emits (`<p>`, `<i>`, `<b>`, `<a>`, `<pre><code>`, `<br>`, and entities), producing native `AttributedString` blocks rather than relying on a web view.
 - The full comment tree is fetched from Algolia in one request and flattened into a list with depth, so collapsing a thread is instant.
 - Colors are appearance-adaptive tokens defined in code, so light and dark are both deliberately tuned rather than auto-derived.
+
+## Privacy
+
+Ember talks only to the official, public Hacker News APIs — the
+[Firebase API](https://github.com/HackerNews/API) for feeds, items, and users,
+and the [Algolia HN Search API](https://hn.algolia.com/api) for comment trees and
+search. There is no scraping, no login, and no account. The app collects no
+personal data, contains no analytics or tracking SDKs, and stores everything
+(settings, saved stories, read state, the offline cache) locally on device. This
+is declared in [`Resources/PrivacyInfo.xcprivacy`](Resources/PrivacyInfo.xcprivacy).
 
 ## Acknowledgements
 

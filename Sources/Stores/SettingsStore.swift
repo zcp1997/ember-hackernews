@@ -70,10 +70,19 @@ final class SettingsStore {
         didSet { store(showRankNumbers, .showRankNumbers) }
     }
 
+    /// Multiplier applied to reading text (comments, article body, titles) on
+    /// top of Dynamic Type. Adjustable in Settings and by pinch-to-zoom.
+    var readingTextScale: Double {
+        didSet { store(readingTextScale, .readingTextScale) }
+    }
+
     /// Whether the first-run personalization flow has been completed.
     var hasCompletedOnboarding: Bool {
         didSet { store(hasCompletedOnboarding, .onboarded) }
     }
+
+    static let minTextScale = 0.8
+    static let maxTextScale = 1.7
 
     private let defaults: UserDefaults
 
@@ -90,6 +99,8 @@ final class SettingsStore {
         distinguishWithoutColor = defaults.object(forKey: Key.distinguishWithoutColor.rawValue) as? Bool ?? false
         showRankNumbers = defaults.object(forKey: Key.showRankNumbers.rawValue) as? Bool ?? true
         hasCompletedOnboarding = defaults.object(forKey: Key.onboarded.rawValue) as? Bool ?? false
+        let storedScale = defaults.object(forKey: Key.readingTextScale.rawValue) as? Double ?? 1.0
+        readingTextScale = min(Self.maxTextScale, max(Self.minTextScale, storedScale))
         Haptics.isEnabled = hapticsEnabled
     }
 
@@ -105,6 +116,7 @@ final class SettingsStore {
         case distinguishWithoutColor = "settings.distinguishWithoutColor"
         case showRankNumbers = "settings.showRankNumbers"
         case onboarded = "settings.hasCompletedOnboarding"
+        case readingTextScale = "settings.readingTextScale"
     }
 
     private func store(_ value: Any, _ key: Key) {
