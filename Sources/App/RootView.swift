@@ -6,6 +6,8 @@ import UIKit
 /// handling, in-app browser, onboarding) is applied once here for both.
 struct RootView: View {
     @Environment(SettingsStore.self) private var settings
+    @Environment(BookmarkStore.self) private var bookmarks
+    @Environment(ReadStore.self) private var readStore
     @Environment(LinkOpener.self) private var linkOpener
     @Environment(\.openURL) private var systemOpenURL
     @Environment(\.horizontalSizeClass) private var sizeClass
@@ -45,7 +47,13 @@ struct RootView: View {
                 .ignoresSafeArea()
         }
         .fullScreenCover(isPresented: onboardingBinding) {
+            // Re-inject the Observation stores: presented views (full-screen
+            // cover / sheet) don't reliably inherit `@Observable` environment
+            // objects across the presentation boundary, which crashed the
+            // Mac Catalyst build on first launch (issue #1).
             OnboardingView()
+                .modifier(AppStoresEnvironment(settings: settings, bookmarks: bookmarks,
+                                               readStore: readStore, linkOpener: linkOpener))
         }
     }
 
