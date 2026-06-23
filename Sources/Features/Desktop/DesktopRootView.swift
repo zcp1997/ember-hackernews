@@ -116,11 +116,11 @@ struct DesktopRootView: View {
             }
             .id(story.id)
         } else {
-            ContentUnavailableView {
-                Label("Select a story", systemImage: "text.bubble")
-            } description: {
-                Text("Choose a story from the list to read the discussion.")
-            }
+            EmptyStateView(
+                systemImage: "text.bubble",
+                title: "Select a story",
+                message: "Choose a story from the list to read the discussion."
+            )
             .background(Theme.background)
         }
     }

@@ -420,7 +420,6 @@ private struct StepScaffold<Content: View>: View {
                 .padding(.top, Spacing.xl)
                 .frame(maxWidth: .infinity, minHeight: 480, alignment: .top)
         }
-        .scrollBounceBehavior(.basedOnSize)
     }
 }
 

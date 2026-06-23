@@ -60,11 +60,11 @@ struct DesktopSavedColumn: View {
     var body: some View {
         Group {
             if bookmarks.items.isEmpty {
-                ContentUnavailableView {
-                    Label("Nothing saved", systemImage: "bookmark")
-                } description: {
-                    Text("Stories you save will appear here.")
-                }
+                EmptyStateView(
+                    systemImage: "bookmark",
+                    title: "Nothing saved",
+                    message: "Stories you save will appear here."
+                )
             } else {
                 List(selection: $selection) {
                     ForEach(bookmarks.items) { story in
@@ -101,15 +101,19 @@ struct DesktopSearchColumn: View {
         Group {
             switch vm.phase {
             case .idle:
-                ContentUnavailableView {
-                    Label("Search Hacker News", systemImage: "magnifyingglass")
-                } description: {
-                    Text("Find stories and discussions by keyword.")
-                }
+                EmptyStateView(
+                    systemImage: "magnifyingglass",
+                    title: "Search Hacker News",
+                    message: "Find stories and discussions by keyword."
+                )
             case .searching:
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             case .empty:
-                ContentUnavailableView.search(text: vm.query)
+                EmptyStateView(
+                    systemImage: "magnifyingglass",
+                    title: "No Results",
+                    message: "No stories matched \"\(vm.query)\"."
+                )
             case .failed(let message):
                 ErrorStateView(message: message) { Task { await vm.runSearch() } }
             case .results:

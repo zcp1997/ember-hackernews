@@ -45,11 +45,11 @@ struct StoryDetailView: View {
     }
 
     private var pinchToZoom: some Gesture {
-        MagnifyGesture()
+        MagnificationGesture()
             .onChanged { value in
                 let base = pinchBaseline ?? settings.readingTextScale
                 if pinchBaseline == nil { pinchBaseline = base }
-                let proposed = base * value.magnification
+                let proposed = base * value
                 let clamped = min(SettingsStore.maxTextScale, max(SettingsStore.minTextScale, proposed))
                 // Snap to 0.05 steps to avoid a flood of persisted writes.
                 let snapped = (clamped * 20).rounded() / 20
