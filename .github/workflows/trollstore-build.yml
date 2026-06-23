@@ -7,14 +7,12 @@ on:
 
 jobs:
   build:
-    # 核心修改：升级到 macos-15 虚拟机，以支持更高的 Xcode 项目格式
     runs-on: macos-15 
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # 显式切换到 Xcode 16（防止环境中有多个版本默认指向旧版本）
     - name: Select Xcode Version
       run: sudo xcode-select -s /Applications/Xcode_16.app
 
@@ -34,6 +32,8 @@ jobs:
                    CODE_SIGNING_ALLOWED=NO \
                    CODE_SIGNING_REQUIRED=NO \
                    CODE_SIGN_IDENTITY="" \
+                   COMPILER_INDEX_STORE_ENABLE=NO \
+                   ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS=NO \
                    archive
 
     - name: Create IPA Container
