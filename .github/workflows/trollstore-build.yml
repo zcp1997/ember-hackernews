@@ -1,0 +1,51 @@
+name: Build for TrollStore
+
+on:
+  workflow_dispatch: # 允许你手动点击按钮触发编译
+  push:
+    branches: [ master, main ]
+
+jobs:
+  build:
+    runs-on: macos-14 # 必须使用 macOS 环境
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 第一步：安装 xcodegen 工具
+    - name: Install XcodeGen
+      run: brew install xcodegen
+
+    # 第二步：通过 project.yml 动态生成 .xcodeproj 文件
+    - name: Generate Xcode Project
+      run: xcodegen generate
+
+    # 第三步：使用 xcodebuild 编译成未签名的 xcarchive
+    # 根据你的 project.yml，项目名是 Ember，Scheme 也是 Ember
+    - name: Build and Archive (Unsigned)
+      run: |
+        xcodebuild -project Ember.xcodeproj \
+                   -scheme Ember \
+                   -sdk iphoneos \
+                   -configuration Release \
+                   -archivePath $RUNNER_TEMP/Ember.xcarchive \
+                   CODE_SIGNING_ALLOWED=NO \
+                   CODE_SIGNING_REQUIRED=NO \
+                   CODE_SIGN_IDENTITY="" \
+                   archive
+
+    # 第四步：打包成适合巨魔商店安装的 IPA
+    - name: Create IPA Container
+      run: |
+        mkdir -p $RUNNER_TEMP/Payload
+        cp -r $RUNNER_TEMP/Ember.xcarchive/Products/Applications/*.app $RUNNER_TEMP/Payload/
+        cd $RUNNER_TEMP
+        zip -r Ember-HackerNews.ipa Payload
+
+    # 第五步：上传到 GitHub Actions 产物中
+    - name: Upload IPA to GitHub Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: Ember-TrollStore
+        path: ${{ runner.temp }}/Ember-HackerNews.ipa
