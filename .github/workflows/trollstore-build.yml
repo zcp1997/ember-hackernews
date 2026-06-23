@@ -22,9 +22,14 @@ jobs:
     - name: Generate Xcode Project
       run: xcodegen generate
 
-    - name: Fix SwiftUI Naming Conflict
+    # 🛠️ 暴力降维打击：修复命名冲突，并彻底清空资产目录，不给 actool 报错的机会
+    - name: Fix Naming and Assets Bug
       run: |
+        # 1. 修复代码命名冲突
         sed -i '' 's/\.buttonStyle(\.card)/\.buttonStyle(CardButtonStyle())/g' Sources/Features/StoryDetail/StoryDetailView.swift
+        
+        # 2. 彻底清空 Assets 内部文件，只留下目录本身，不让它编译任何图标/颜色
+        rm -rf Resources/Assets.xcassets/*
 
     - name: Build and Archive (Unsigned)
       run: |
@@ -37,10 +42,6 @@ jobs:
                    CODE_SIGNING_REQUIRED=NO \
                    CODE_SIGN_IDENTITY="" \
                    COMPILER_INDEX_STORE_ENABLE=NO \
-                   ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS=NO \
-                   ACTION=archive \
-                   TARGET_DEVICE_PLATFORM_NAME=iphoneos \
-                   SUPPORTED_PLATFORMS=iphoneos \
                    archive
 
     - name: Create IPA Container
