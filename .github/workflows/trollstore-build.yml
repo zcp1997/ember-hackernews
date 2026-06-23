@@ -22,6 +22,11 @@ jobs:
     - name: Generate Xcode Project
       run: xcodegen generate
 
+    # 🛠️ 核心修复：用 sed 替换报错文件中的 .card，规避与 iOS 18 官方 SwiftUI API 的命名冲突
+    - name: Fix SwiftUI Naming Conflict
+      run: |
+        sed -i '' 's/\.buttonStyle(\.card)/\.buttonStyle(CardButtonStyle())/g' Sources/Features/StoryDetail/StoryDetailView.swift
+
     - name: Build and Archive (Unsigned)
       run: |
         xcodebuild -project Ember.xcodeproj \
