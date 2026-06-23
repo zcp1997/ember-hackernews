@@ -16,20 +16,28 @@ jobs:
     - name: Select Xcode Version
       run: sudo xcode-select -s /Applications/Xcode_16.app
 
+    # 🛠️ 核心突破：在生成项目前，抹除 project.yml 里对应用图标和主题色的强依赖
+    - name: Strip Asset Dependencies from Config
+      run: |
+        # 1. 删掉 project.yml 里面包含 AppIcon 和 AccentColor 的整行配置
+        sed -i '' '/ASSETCATALOG_COMPILER_APPICON_NAME/d' project.yml
+        sed -i '' '/ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME/d' project.yml
+        sed -i '' '/app-icon:/d' project.yml
+        sed -i '' '/accent-color:/d' project.yml
+        
+        # 2. 彻底移除原有的 Assets 资产夹，只建一个纯空的壳子占位
+        rm -rf Resources/Assets.xcassets
+        mkdir -p Resources/Assets.xcassets
+
     - name: Install XcodeGen
       run: brew install xcodegen
 
     - name: Generate Xcode Project
       run: xcodegen generate
 
-    # 🛠️ 暴力降维打击：修复命名冲突，并彻底清空资产目录，不给 actool 报错的机会
-    - name: Fix Naming and Assets Bug
+    - name: Fix SwiftUI Naming Conflict
       run: |
-        # 1. 修复代码命名冲突
         sed -i '' 's/\.buttonStyle(\.card)/\.buttonStyle(CardButtonStyle())/g' Sources/Features/StoryDetail/StoryDetailView.swift
-        
-        # 2. 彻底清空 Assets 内部文件，只留下目录本身，不让它编译任何图标/颜色
-        rm -rf Resources/Assets.xcassets/*
 
     - name: Build and Archive (Unsigned)
       run: |
