@@ -7,14 +7,16 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15
+    runs-on: macos-26
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Select Xcode Version
-      run: sudo xcode-select -s /Applications/Xcode_16.app
+    - name: Show Xcode Version
+      run: |
+        xcodebuild -version
+        xcrun --sdk iphoneos --show-sdk-version
 
     - name: Install XcodeGen
       run: brew install xcodegen
@@ -34,16 +36,23 @@ jobs:
 
     - name: Build and Archive Unsigned
       run: |
+        set -o pipefail
         xcodebuild -project Ember.xcodeproj \
           -scheme Ember \
           -sdk iphoneos \
+          -destination 'generic/platform=iOS' \
           -configuration Release \
           -archivePath "$RUNNER_TEMP/Ember.xcarchive" \
           CODE_SIGNING_ALLOWED=NO \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGN_IDENTITY="" \
           COMPILER_INDEX_STORE_ENABLE=NO \
-          archive
+          archive | tee "$RUNNER_TEMP/xcodebuild.log"
+
+    - name: Show Build Errors
+      if: failure()
+      run: |
+        grep -nE "error:|fatal error:|ARCHIVE FAILED|BUILD FAILED|The following build commands failed" "$RUNNER_TEMP/xcodebuild.log" || true
 
     - name: Create IPA Container
       run: |
@@ -52,7 +61,7 @@ jobs:
         cd "$RUNNER_TEMP"
         zip -r Ember-HackerNews.ipa Payload
 
-    - name: Upload IPA to GitHub Artifacts
+    - name: Upload IPA
       uses: actions/upload-artifact@v4
       with:
         name: Ember-TrollStore
