@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15 
+    runs-on: macos-15
 
     steps:
     - name: Checkout repository
@@ -16,21 +16,14 @@ jobs:
     - name: Select Xcode Version
       run: sudo xcode-select -s /Applications/Xcode_16.app
 
-    # 🛠️ 核心突破：在生成项目前，抹除 project.yml 里对应用图标和主题色的强依赖
-    - name: Strip Asset Dependencies from Config
-      run: |
-        # 1. 删掉 project.yml 里面包含 AppIcon 和 AccentColor 的整行配置
-        sed -i '' '/ASSETCATALOG_COMPILER_APPICON_NAME/d' project.yml
-        sed -i '' '/ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME/d' project.yml
-        sed -i '' '/app-icon:/d' project.yml
-        sed -i '' '/accent-color:/d' project.yml
-        
-        # 2. 彻底移除原有的 Assets 资产夹，只建一个纯空的壳子占位
-        rm -rf Resources/Assets.xcassets
-        mkdir -p Resources/Assets.xcassets
-
     - name: Install XcodeGen
       run: brew install xcodegen
+
+    - name: Ensure App Icon Exists
+      run: |
+        if [ ! -f Resources/Assets.xcassets/AppIcon.appiconset/icon-1024.png ]; then
+          swift Tools/GenerateIcon.swift
+        fi
 
     - name: Generate Xcode Project
       run: xcodegen generate
@@ -39,24 +32,24 @@ jobs:
       run: |
         sed -i '' 's/\.buttonStyle(\.card)/\.buttonStyle(CardButtonStyle())/g' Sources/Features/StoryDetail/StoryDetailView.swift
 
-    - name: Build and Archive (Unsigned)
+    - name: Build and Archive Unsigned
       run: |
         xcodebuild -project Ember.xcodeproj \
-                   -scheme Ember \
-                   -sdk iphoneos \
-                   -configuration Release \
-                   -archivePath $RUNNER_TEMP/Ember.xcarchive \
-                   CODE_SIGNING_ALLOWED=NO \
-                   CODE_SIGNING_REQUIRED=NO \
-                   CODE_SIGN_IDENTITY="" \
-                   COMPILER_INDEX_STORE_ENABLE=NO \
-                   archive
+          -scheme Ember \
+          -sdk iphoneos \
+          -configuration Release \
+          -archivePath "$RUNNER_TEMP/Ember.xcarchive" \
+          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGN_IDENTITY="" \
+          COMPILER_INDEX_STORE_ENABLE=NO \
+          archive
 
     - name: Create IPA Container
       run: |
-        mkdir -p $RUNNER_TEMP/Payload
-        cp -r $RUNNER_TEMP/Ember.xcarchive/Products/Applications/*.app $RUNNER_TEMP/Payload/
-        cd $RUNNER_TEMP
+        mkdir -p "$RUNNER_TEMP/Payload"
+        cp -R "$RUNNER_TEMP/Ember.xcarchive/Products/Applications/Ember.app" "$RUNNER_TEMP/Payload/"
+        cd "$RUNNER_TEMP"
         zip -r Ember-HackerNews.ipa Payload
 
     - name: Upload IPA to GitHub Artifacts
