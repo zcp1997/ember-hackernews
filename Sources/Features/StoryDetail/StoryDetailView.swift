@@ -4,17 +4,17 @@ import SwiftUI
 /// over a threaded, collapsible comment list.
 struct StoryDetailView: View {
     let item: HNItem
-    @State private var vm: StoryDetailViewModel
+    @StateObject private var vm: StoryDetailViewModel
 
-    @Environment(SettingsStore.self) private var settings
-    @Environment(BookmarkStore.self) private var bookmarks
-    @Environment(ReadStore.self) private var readStore
+    @EnvironmentObject private var settings: SettingsStore
+    @EnvironmentObject private var bookmarks: BookmarkStore
+    @EnvironmentObject private var readStore: ReadStore
     @Environment(\.openArticle) private var openArticle
     @Environment(\.openURL) private var openURL
 
     init(item: HNItem) {
         self.item = item
-        _vm = State(initialValue: StoryDetailViewModel(item: item))
+        _vm = StateObject(wrappedValue: StoryDetailViewModel(item: item))
     }
 
     private var story: HNItem { vm.resolvedItem }
@@ -186,7 +186,7 @@ struct StoryDetailView: View {
                 if case .loaded = vm.phase, vm.commentCount > 0 {
                     Button {
                         Haptics.tap()
-                        withAnimation(.snappy) { vm.toggleCollapseAll() }
+                        withAnimation(.easeInOut) { vm.toggleCollapseAll() }
                     } label: {
                         Label(vm.allTopLevelCollapsed ? "Expand All" : "Collapse All",
                               systemImage: vm.allTopLevelCollapsed
@@ -230,7 +230,7 @@ struct StoryDetailView: View {
                             opAuthor: story.author,
                             isCollapsed: vm.isCollapsed(comment.id)
                         ) {
-                            withAnimation(.snappy(duration: 0.22)) {
+                            withAnimation(.easeInOut(duration: 0.22)) {
                                 vm.toggleCollapse(comment.id)
                             }
                         }

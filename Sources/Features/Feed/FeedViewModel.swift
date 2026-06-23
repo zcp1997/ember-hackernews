@@ -1,5 +1,5 @@
+import Combine
 import Foundation
-import Observation
 
 enum LoadPhase: Equatable {
     case loading
@@ -11,13 +11,12 @@ enum LoadPhase: Equatable {
 /// batches. Tolerates per-item failures (deleted/missing) without failing the
 /// whole feed.
 @MainActor
-@Observable
-final class FeedViewModel {
-    private(set) var feed: Feed
-    private(set) var stories: [HNItem] = []
-    private(set) var phase: LoadPhase = .loading
-    private(set) var isLoadingMore = false
-    private(set) var canLoadMore = true
+final class FeedViewModel: ObservableObject {
+    @Published private(set) var feed: Feed
+    @Published private(set) var stories: [HNItem] = []
+    @Published private(set) var phase: LoadPhase = .loading
+    @Published private(set) var isLoadingMore = false
+    @Published private(set) var canLoadMore = true
 
     private var allIDs: [Int] = []
     private var nextIndex = 0

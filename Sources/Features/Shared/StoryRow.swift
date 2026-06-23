@@ -7,9 +7,9 @@ struct StoryRow: View {
     let item: HNItem
     var rank: Int?
 
-    @Environment(SettingsStore.self) private var settings
-    @Environment(BookmarkStore.self) private var bookmarks
-    @Environment(ReadStore.self) private var readStore
+    @EnvironmentObject private var settings: SettingsStore
+    @EnvironmentObject private var bookmarks: BookmarkStore
+    @EnvironmentObject private var readStore: ReadStore
     @Environment(\.openArticle) private var openArticle
     @Environment(\.accessibilityDifferentiateWithoutColor) private var systemDiffNoColor
     @Environment(\.dynamicTypeSize) private var typeSize

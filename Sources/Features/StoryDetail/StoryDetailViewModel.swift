@@ -1,16 +1,15 @@
+import Combine
 import Foundation
-import Observation
 
 /// Loads and manages the comment thread for a story, including collapse state.
 @MainActor
-@Observable
-final class StoryDetailViewModel {
+final class StoryDetailViewModel: ObservableObject {
     let item: HNItem
-    private(set) var comments: [FlatComment] = []
-    private(set) var phase: LoadPhase = .loading
-    private(set) var resolvedItem: HNItem
+    @Published private(set) var comments: [FlatComment] = []
+    @Published private(set) var phase: LoadPhase = .loading
+    @Published private(set) var resolvedItem: HNItem
 
-    private(set) var collapsed: Set<Int> = []
+    @Published private(set) var collapsed: Set<Int> = []
     private let service: HNServicing
 
     init(item: HNItem, service: HNServicing = LiveHNService.shared) {

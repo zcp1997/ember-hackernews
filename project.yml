@@ -2,7 +2,7 @@ name: Ember
 options:
   bundleIdPrefix: com.datanoise
   deploymentTarget:
-    iOS: "17.0"
+    iOS: "16.0"
   createIntermediateGroups: true
   groupSortPosition: top
   generateEmptyDirectories: true
@@ -19,7 +19,7 @@ targets:
   Ember:
     type: application
     platform: iOS
-    deploymentTarget: "17.0"
+    deploymentTarget: "16.0"
     sources:
       - path: Sources
       - path: Resources

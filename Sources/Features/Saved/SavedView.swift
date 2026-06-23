@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SavedView: View {
-    @Environment(BookmarkStore.self) private var bookmarks
+    @EnvironmentObject private var bookmarks: BookmarkStore
     @State private var path = NavigationPath()
 
     var body: some View {

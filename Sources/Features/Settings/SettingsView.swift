@@ -1,22 +1,20 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @Environment(SettingsStore.self) private var settings
-    @Environment(ReadStore.self) private var readStore
-    @Environment(BookmarkStore.self) private var bookmarks
+    @EnvironmentObject private var settings: SettingsStore
+    @EnvironmentObject private var readStore: ReadStore
+    @EnvironmentObject private var bookmarks: BookmarkStore
     @Environment(\.openURL) private var openURL
 
     @State private var confirmClearRead = false
     @State private var cacheSize = 0
 
     var body: some View {
-        @Bindable var settings = settings
-
         NavigationStack {
             Form {
-                appearanceSection($settings)
-                readingSection($settings)
-                accessibilitySection($settings)
+                appearanceSection
+                readingSection
+                accessibilitySection
                 personalizeSection
                 dataSection
                 aboutSection
@@ -31,9 +29,9 @@ struct SettingsView: View {
 
     // MARK: Appearance
 
-    private func appearanceSection(_ settings: Bindable<SettingsStore>) -> some View {
+    private var appearanceSection: some View {
         Section("Appearance") {
-            Picker(selection: settings.appearance) {
+            Picker(selection: $settings.appearance) {
                 ForEach(AppAppearance.allCases) { mode in
                     Label(mode.title, systemImage: mode.systemImage).tag(mode)
                 }
@@ -44,7 +42,7 @@ struct SettingsView: View {
 
             VStack(alignment: .leading, spacing: Spacing.l) {
                 Label("Accent", systemImage: "paintpalette")
-                AccentPicker(selection: settings.accent)
+                AccentPicker(selection: $settings.accent)
             }
             .padding(.vertical, Spacing.s)
         }
@@ -52,16 +50,16 @@ struct SettingsView: View {
 
     // MARK: Reading
 
-    private func readingSection(_ settings: Bindable<SettingsStore>) -> some View {
+    private var readingSection: some View {
         Section("Reading") {
-            Stepper(value: settings.readingTextScale,
+            Stepper(value: $settings.readingTextScale,
                     in: SettingsStore.minTextScale...SettingsStore.maxTextScale,
                     step: 0.1) {
-                Label("Text Size — \(Int((settings.wrappedValue.readingTextScale * 100).rounded()))%",
+                Label("Text Size — \(Int((settings.readingTextScale * 100).rounded()))%",
                       systemImage: "textformat.size")
             }
 
-            Picker(selection: settings.defaultFeed) {
+            Picker(selection: $settings.defaultFeed) {
                 ForEach(Feed.allCases) { feed in
                     Label(feed.title, systemImage: feed.systemImage).tag(feed)
                 }
@@ -69,17 +67,17 @@ struct SettingsView: View {
                 Label("Default Feed", systemImage: "list.bullet.rectangle")
             }
 
-            Toggle(isOn: settings.openLinksInApp) {
+            Toggle(isOn: $settings.openLinksInApp) {
                 Label("Open Links in App", systemImage: "safari")
             }
-            Toggle(isOn: settings.readerMode) {
+            Toggle(isOn: $settings.readerMode) {
                 Label("Use Reader When Available", systemImage: "doc.plaintext")
             }
-            .disabled(!settings.wrappedValue.openLinksInApp)
-            Toggle(isOn: settings.markReadOnOpen) {
+            .disabled(!settings.openLinksInApp)
+            Toggle(isOn: $settings.markReadOnOpen) {
                 Label("Mark Stories Read on Open", systemImage: "checkmark.circle")
             }
-            Toggle(isOn: settings.showThumbnails) {
+            Toggle(isOn: $settings.showThumbnails) {
                 Label("Show Story Thumbnails", systemImage: "square.fill.text.grid.1x2")
             }
         }
@@ -87,18 +85,18 @@ struct SettingsView: View {
 
     // MARK: Accessibility
 
-    private func accessibilitySection(_ settings: Bindable<SettingsStore>) -> some View {
+    private var accessibilitySection: some View {
         Section {
-            Toggle(isOn: settings.underlineLinks) {
+            Toggle(isOn: $settings.underlineLinks) {
                 Label("Underline Links", systemImage: "underline")
             }
-            Toggle(isOn: settings.distinguishWithoutColor) {
+            Toggle(isOn: $settings.distinguishWithoutColor) {
                 Label("Color-Blind Friendly Cues", systemImage: "circle.dashed")
             }
-            Toggle(isOn: settings.showRankNumbers) {
+            Toggle(isOn: $settings.showRankNumbers) {
                 Label("Show Rank Numbers", systemImage: "number")
             }
-            Toggle(isOn: settings.hapticsEnabled) {
+            Toggle(isOn: $settings.hapticsEnabled) {
                 Label("Haptic Feedback", systemImage: "iphone.radiowaves.left.and.right")
             }
         } header: {

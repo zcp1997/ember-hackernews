@@ -2,12 +2,12 @@ import SwiftUI
 
 struct UserView: View {
     let username: String
-    @State private var vm: UserViewModel
+    @StateObject private var vm: UserViewModel
     @Environment(\.openURL) private var openURL
 
     init(username: String) {
         self.username = username
-        _vm = State(initialValue: UserViewModel(username: username))
+        _vm = StateObject(wrappedValue: UserViewModel(username: username))
     }
 
     var body: some View {

@@ -2,18 +2,18 @@ import SwiftUI
 
 @main
 struct EmberApp: App {
-    @State private var settings = SettingsStore()
-    @State private var bookmarks = BookmarkStore()
-    @State private var readStore = ReadStore()
-    @State private var linkOpener = LinkOpener()
+    @StateObject private var settings = SettingsStore()
+    @StateObject private var bookmarks = BookmarkStore()
+    @StateObject private var readStore = ReadStore()
+    @StateObject private var linkOpener = LinkOpener()
 
     var body: some Scene {
         WindowGroup {
             RootView()
-                .environment(settings)
-                .environment(bookmarks)
-                .environment(readStore)
-                .environment(linkOpener)
+                .environmentObject(settings)
+                .environmentObject(bookmarks)
+                .environmentObject(readStore)
+                .environmentObject(linkOpener)
         }
     }
 }

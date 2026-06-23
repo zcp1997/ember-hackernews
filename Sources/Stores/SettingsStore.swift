@@ -37,31 +37,30 @@ enum AppAppearance: String, CaseIterable, Identifiable, Codable {
 }
 
 /// User preferences, persisted to `UserDefaults` and observed app-wide.
-@Observable
-final class SettingsStore {
-    var appearance: AppAppearance {
+final class SettingsStore: ObservableObject {
+    @Published var appearance: AppAppearance {
         didSet { store(appearance.rawValue, .appearance) }
     }
-    var accent: AccentTheme {
+    @Published var accent: AccentTheme {
         didSet { store(accent.rawValue, .accent) }
     }
-    var defaultFeed: Feed {
+    @Published var defaultFeed: Feed {
         didSet { store(defaultFeed.rawValue, .defaultFeed) }
     }
-    var openLinksInApp: Bool {
+    @Published var openLinksInApp: Bool {
         didSet { store(openLinksInApp, .openLinksInApp) }
     }
-    var readerMode: Bool {
+    @Published var readerMode: Bool {
         didSet { store(readerMode, .readerMode) }
     }
-    var markReadOnOpen: Bool {
+    @Published var markReadOnOpen: Bool {
         didSet { store(markReadOnOpen, .markReadOnOpen) }
     }
     /// Show the favicon/image thumbnail on each story row.
-    var showThumbnails: Bool {
+    @Published var showThumbnails: Bool {
         didSet { store(showThumbnails, .showThumbnails) }
     }
-    var hapticsEnabled: Bool {
+    @Published var hapticsEnabled: Bool {
         didSet {
             store(hapticsEnabled, .haptics)
             Haptics.isEnabled = hapticsEnabled
@@ -71,27 +70,27 @@ final class SettingsStore {
     // MARK: Accessibility
 
     /// Underline links inside comments/text for users who can't rely on color.
-    var underlineLinks: Bool {
+    @Published var underlineLinks: Bool {
         didSet { store(underlineLinks, .underlineLinks) }
     }
     /// Force color-independent status cues (read badges, status shapes) on,
     /// regardless of the system "Differentiate Without Color" setting.
-    var distinguishWithoutColor: Bool {
+    @Published var distinguishWithoutColor: Bool {
         didSet { store(distinguishWithoutColor, .distinguishWithoutColor) }
     }
     /// Show the numeric rank badge on story rows (extra non-color ordering cue).
-    var showRankNumbers: Bool {
+    @Published var showRankNumbers: Bool {
         didSet { store(showRankNumbers, .showRankNumbers) }
     }
 
     /// Multiplier applied to reading text (comments, article body, titles) on
     /// top of Dynamic Type. Adjustable in Settings and by pinch-to-zoom.
-    var readingTextScale: Double {
+    @Published var readingTextScale: Double {
         didSet { store(readingTextScale, .readingTextScale) }
     }
 
     /// Whether the first-run personalization flow has been completed.
-    var hasCompletedOnboarding: Bool {
+    @Published var hasCompletedOnboarding: Bool {
         didSet { store(hasCompletedOnboarding, .onboarded) }
     }
 

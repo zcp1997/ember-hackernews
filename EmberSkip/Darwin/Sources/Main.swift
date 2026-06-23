@@ -13,7 +13,7 @@ private typealias AppDelegate = EmberAppDelegate
         WindowGroup {
             AppRootView()
         }
-        .onChange(of: scenePhase) { oldPhase, newPhase in
+        .onChange(of: scenePhase) { newPhase in
             switch newPhase {
             case .active:
                 AppDelegate.shared.onResume()

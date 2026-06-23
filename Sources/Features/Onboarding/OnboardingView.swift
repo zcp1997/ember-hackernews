@@ -6,7 +6,7 @@ import UIKit
 /// match, then explains what it tuned. Every choice updates the app — and the
 /// live preview — immediately.
 struct OnboardingView: View {
-    @Environment(SettingsStore.self) private var settings
+    @EnvironmentObject private var settings: SettingsStore
     @Environment(\.colorScheme) private var systemScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var typeSize
@@ -18,8 +18,6 @@ struct OnboardingView: View {
     private let lastStep = 5
 
     var body: some View {
-        @Bindable var settings = settings
-
         VStack(spacing: 0) {
             progressBar
                 .padding(.horizontal, Spacing.xl)
@@ -27,10 +25,10 @@ struct OnboardingView: View {
 
             TabView(selection: $step) {
                 welcomeStep.tag(0)
-                appearanceStep($settings).tag(1)
-                accentStep($settings).tag(2)
-                accessibilityStep($settings).tag(3)
-                feedStep($settings).tag(4)
+                appearanceStep.tag(1)
+                accentStep.tag(2)
+                accessibilityStep.tag(3)
+                feedStep.tag(4)
                 doneStep.tag(5)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
@@ -110,7 +108,7 @@ struct OnboardingView: View {
 
     // MARK: Step 1 — Appearance
 
-    private func appearanceStep(_ settings: Bindable<SettingsStore>) -> some View {
+    private var appearanceStep: some View {
         StepScaffold {
             VStack(spacing: Spacing.xl) {
                 StepHeader(
@@ -124,10 +122,10 @@ struct OnboardingView: View {
                         SelectableCard(
                             title: mode.title,
                             systemImage: mode.systemImage,
-                            isSelected: settings.wrappedValue.appearance == mode,
-                            accent: settings.wrappedValue.accent.color
+                            isSelected: settings.appearance == mode,
+                            accent: settings.accent.color
                         ) {
-                            withAnimation { settings.wrappedValue.appearance = mode }
+                            withAnimation { settings.appearance = mode }
                             Haptics.selection()
                         }
                     }
@@ -140,7 +138,7 @@ struct OnboardingView: View {
 
     // MARK: Step 2 — Accent
 
-    private func accentStep(_ settings: Bindable<SettingsStore>) -> some View {
+    private var accentStep: some View {
         StepScaffold {
             VStack(spacing: Spacing.xl) {
                 StepHeader(title: "Pick an accent", subtitle: "Used for highlights, links, and actions across the app.")
@@ -148,7 +146,7 @@ struct OnboardingView: View {
                 FlexibleLayout(spacing: Spacing.m, lineSpacing: Spacing.m) {
                     ForEach(AccentTheme.allCases) { accent in
                         Button {
-                            withAnimation { settings.wrappedValue.accent = accent }
+                            withAnimation { settings.accent = accent }
                             Haptics.selection()
                         } label: {
                             VStack(spacing: 6) {
@@ -156,7 +154,7 @@ struct OnboardingView: View {
                                     .fill(accent.color)
                                     .frame(width: 46, height: 46)
                                     .overlay {
-                                        if settings.wrappedValue.accent == accent {
+                                        if settings.accent == accent {
                                             Image(systemName: "checkmark")
                                                 .font(.system(size: 17, weight: .bold))
                                                 .foregroundStyle(.white)
@@ -164,7 +162,7 @@ struct OnboardingView: View {
                                     }
                                     .overlay(
                                         Circle().strokeBorder(
-                                            settings.wrappedValue.accent == accent ? Theme.textPrimary : .clear,
+                                            settings.accent == accent ? Theme.textPrimary : .clear,
                                             lineWidth: 2.5
                                         ).padding(-4)
                                     )
@@ -176,7 +174,7 @@ struct OnboardingView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel(accent.title)
-                        .accessibilityAddTraits(settings.wrappedValue.accent == accent ? [.isButton, .isSelected] : .isButton)
+                        .accessibilityAddTraits(settings.accent == accent ? [.isButton, .isSelected] : .isButton)
                     }
                 }
                 previewCard
@@ -187,7 +185,7 @@ struct OnboardingView: View {
 
     // MARK: Step 4 — Home feed
 
-    private func feedStep(_ settings: Bindable<SettingsStore>) -> some View {
+    private var feedStep: some View {
         StepScaffold {
             VStack(spacing: Spacing.l) {
                 StepHeader(title: "Where should we start?", subtitle: "Your home feed when you open Ember. You can switch anytime.")
@@ -195,10 +193,10 @@ struct OnboardingView: View {
                     ForEach(Feed.allCases) { feed in
                         FeedChoiceRow(
                             feed: feed,
-                            isSelected: settings.wrappedValue.defaultFeed == feed,
-                            accent: settings.wrappedValue.accent.color
+                            isSelected: settings.defaultFeed == feed,
+                            accent: settings.accent.color
                         ) {
-                            withAnimation { settings.wrappedValue.defaultFeed = feed }
+                            withAnimation { settings.defaultFeed = feed }
                             Haptics.selection()
                         }
                     }
@@ -210,7 +208,7 @@ struct OnboardingView: View {
 
     // MARK: Step 3 — Accessibility (smart)
 
-    private func accessibilityStep(_ settings: Bindable<SettingsStore>) -> some View {
+    private var accessibilityStep: some View {
         StepScaffold {
             VStack(alignment: .leading, spacing: Spacing.l) {
                 StepHeader(
@@ -226,7 +224,7 @@ struct OnboardingView: View {
                             HStack(spacing: Spacing.s) {
                                 Image(systemName: item.icon)
                                     .font(.system(size: 14, weight: .semibold))
-                                    .foregroundStyle(settings.wrappedValue.accent.color)
+                                    .foregroundStyle(settings.accent.color)
                                     .frame(width: 22)
                                 Text(item.text)
                                     .font(.subheadline)
@@ -244,13 +242,13 @@ struct OnboardingView: View {
                 }
 
                 VStack(spacing: 2) {
-                    ToggleRow(title: "Color-blind friendly cues", subtitle: "Adds checkmarks and shapes, not just color", systemImage: "circle.dashed", isOn: settings.distinguishWithoutColor)
+                    ToggleRow(title: "Color-blind friendly cues", subtitle: "Adds checkmarks and shapes, not just color", systemImage: "circle.dashed", isOn: $settings.distinguishWithoutColor)
                     Divider().padding(.leading, 40)
-                    ToggleRow(title: "Underline links", subtitle: "Keep links identifiable without color", systemImage: "underline", isOn: settings.underlineLinks)
+                    ToggleRow(title: "Underline links", subtitle: "Keep links identifiable without color", systemImage: "underline", isOn: $settings.underlineLinks)
                     Divider().padding(.leading, 40)
-                    ToggleRow(title: "Rank numbers", subtitle: "Show numeric position in feeds", systemImage: "number", isOn: settings.showRankNumbers)
+                    ToggleRow(title: "Rank numbers", subtitle: "Show numeric position in feeds", systemImage: "number", isOn: $settings.showRankNumbers)
                     Divider().padding(.leading, 40)
-                    ToggleRow(title: "Story thumbnails", subtitle: "Show the site favicon next to each story", systemImage: "square.fill.text.grid.1x2", isOn: settings.showThumbnails)
+                    ToggleRow(title: "Story thumbnails", subtitle: "Show the site favicon next to each story", systemImage: "square.fill.text.grid.1x2", isOn: $settings.showThumbnails)
                 }
                 .background(Theme.surface)
                 .clipShape(RoundedRectangle(cornerRadius: Radius.m, style: .continuous))

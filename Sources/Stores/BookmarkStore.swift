@@ -1,11 +1,10 @@
+import Combine
 import Foundation
-import Observation
 
 /// Saved stories. Full `HNItem` snapshots are persisted to a JSON file so the
 /// Saved tab renders instantly and works offline.
-@Observable
-final class BookmarkStore {
-    private(set) var items: [HNItem] = []
+final class BookmarkStore: ObservableObject {
+    @Published private(set) var items: [HNItem] = []
 
     private let fileURL: URL
     private var ids: Set<Int> = []

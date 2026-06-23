@@ -3,7 +3,7 @@ import SwiftUI
 /// The Ember Android/iOS feed. Shared SwiftUI, transpiled to Jetpack Compose
 /// on Android by Skip.
 struct ContentView: View {
-    @State var viewModel = FeedViewModel()
+    @StateObject var viewModel = FeedViewModel()
 
     var body: some View {
         NavigationStack {
@@ -109,7 +109,7 @@ struct StoryRowView: View {
 
 struct StoryDetailView: View {
     let story: HNStory
-    @State private var viewModel = CommentsViewModel()
+    @StateObject private var viewModel = CommentsViewModel()
     @Environment(\.openURL) private var openURL
 
     var body: some View {

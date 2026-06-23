@@ -4,12 +4,12 @@ import SwiftUI
 struct DesktopFeedColumn: View {
     let feed: Feed
     @Binding var selection: HNItem?
-    @State private var vm: FeedViewModel
+    @StateObject private var vm: FeedViewModel
 
     init(feed: Feed, selection: Binding<HNItem?>) {
         self.feed = feed
         _selection = selection
-        _vm = State(initialValue: FeedViewModel(feed: feed))
+        _vm = StateObject(wrappedValue: FeedViewModel(feed: feed))
     }
 
     var body: some View {
@@ -54,7 +54,7 @@ struct DesktopFeedColumn: View {
 
 /// Saved stories for the desktop middle column.
 struct DesktopSavedColumn: View {
-    @Environment(BookmarkStore.self) private var bookmarks
+    @EnvironmentObject private var bookmarks: BookmarkStore
     @Binding var selection: HNItem?
 
     var body: some View {
@@ -92,7 +92,7 @@ struct DesktopSavedColumn: View {
 
 /// Search for the desktop middle column.
 struct DesktopSearchColumn: View {
-    @State private var vm = SearchViewModel()
+    @StateObject private var vm = SearchViewModel()
     @Binding var selection: HNItem?
 
     private var searchKey: String { "\(vm.query)|\(vm.mode.rawValue)" }

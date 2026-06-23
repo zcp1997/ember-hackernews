@@ -4,10 +4,10 @@ import SwiftUI
 /// library), a story list, and the discussion detail. Reuses the same rows,
 /// detail view, and view models as the iPhone layout.
 struct DesktopRootView: View {
-    @Environment(SettingsStore.self) private var settings
-    @Environment(BookmarkStore.self) private var bookmarks
-    @Environment(ReadStore.self) private var readStore
-    @Environment(LinkOpener.self) private var linkOpener
+    @EnvironmentObject private var settings: SettingsStore
+    @EnvironmentObject private var bookmarks: BookmarkStore
+    @EnvironmentObject private var readStore: ReadStore
+    @EnvironmentObject private var linkOpener: LinkOpener
 
     // Optional so the single-selection `List(selection:)` resolves to the
     // iOS/Catalyst-available initializer.

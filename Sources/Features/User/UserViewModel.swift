@@ -1,13 +1,12 @@
+import Combine
 import Foundation
-import Observation
 
 @MainActor
-@Observable
-final class UserViewModel {
+final class UserViewModel: ObservableObject {
     let username: String
-    private(set) var user: HNUser?
-    private(set) var submissions: [HNItem] = []
-    private(set) var phase: LoadPhase = .loading
+    @Published private(set) var user: HNUser?
+    @Published private(set) var submissions: [HNItem] = []
+    @Published private(set) var phase: LoadPhase = .loading
 
     private let service: HNServicing
 

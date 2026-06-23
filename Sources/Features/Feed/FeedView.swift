@@ -2,11 +2,11 @@ import SwiftUI
 
 /// The primary feeds screen: a pinned feed selector over a paginated story list.
 struct FeedView: View {
-    @State private var vm = FeedViewModel()
+    @StateObject private var vm = FeedViewModel()
     @State private var path = NavigationPath()
 
-    @Environment(SettingsStore.self) private var settings
-    @Environment(BookmarkStore.self) private var bookmarks
+    @EnvironmentObject private var settings: SettingsStore
+    @EnvironmentObject private var bookmarks: BookmarkStore
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -108,7 +108,7 @@ struct FeedView: View {
 
 #Preview {
     FeedView()
-        .environment(SettingsStore())
-        .environment(BookmarkStore())
-        .environment(ReadStore())
+        .environmentObject(SettingsStore())
+        .environmentObject(BookmarkStore())
+        .environmentObject(ReadStore())
 }

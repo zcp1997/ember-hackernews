@@ -16,9 +16,8 @@ struct PresentedURL: Identifiable {
 }
 
 /// Holds the URL currently being presented in the in-app browser.
-@Observable
-final class LinkOpener {
-    var presented: PresentedURL?
+final class LinkOpener: ObservableObject {
+    @Published var presented: PresentedURL?
     func present(_ url: URL, reader: Bool) {
         presented = PresentedURL(url: url, reader: reader)
     }
@@ -43,9 +42,9 @@ struct SafariView: UIViewControllerRepresentable {
 
 // MARK: - Store re-injection for presented views
 
-/// Re-injects the app's Observation stores into a presented surface
+/// Re-injects the app's observable stores into a presented surface
 /// (sheet / full-screen cover). SwiftUI does not reliably propagate
-/// `@Observable` environment objects across a presentation boundary — most
+/// `ObservableObject` environment objects across a presentation boundary — most
 /// visibly on Mac Catalyst — so presented views that read them must have them
 /// re-supplied to avoid a fatal "missing environment" crash.
 struct AppStoresEnvironment: ViewModifier {
@@ -56,17 +55,24 @@ struct AppStoresEnvironment: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .environment(settings)
-            .environment(bookmarks)
-            .environment(readStore)
-            .environment(linkOpener)
+            .environmentObject(settings)
+            .environmentObject(bookmarks)
+            .environmentObject(readStore)
+            .environmentObject(linkOpener)
     }
 }
 
 // MARK: - Environment actions
 
+private struct OpenArticleKey: EnvironmentKey {
+    static let defaultValue: (URL) -> Void = { _ in }
+}
+
 extension EnvironmentValues {
     /// Opens an article URL respecting the user's in-app/system + Reader settings.
     /// Configured once at the app root where settings and `openURL` are available.
-    @Entry var openArticle: (URL) -> Void = { _ in }
+    var openArticle: (URL) -> Void {
+        get { self[OpenArticleKey.self] }
+        set { self[OpenArticleKey.self] = newValue }
+    }
 }

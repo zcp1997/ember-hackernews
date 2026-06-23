@@ -5,16 +5,14 @@ import UIKit
 /// and a tab bar on iPhone. Shared app chrome (accent, color scheme, link
 /// handling, in-app browser, onboarding) is applied once here for both.
 struct RootView: View {
-    @Environment(SettingsStore.self) private var settings
-    @Environment(BookmarkStore.self) private var bookmarks
-    @Environment(ReadStore.self) private var readStore
-    @Environment(LinkOpener.self) private var linkOpener
+    @EnvironmentObject private var settings: SettingsStore
+    @EnvironmentObject private var bookmarks: BookmarkStore
+    @EnvironmentObject private var readStore: ReadStore
+    @EnvironmentObject private var linkOpener: LinkOpener
     @Environment(\.openURL) private var systemOpenURL
     @Environment(\.horizontalSizeClass) private var sizeClass
 
     var body: some View {
-        @Bindable var linkOpener = linkOpener
-
         Group {
             if sizeClass == .compact {
                 MobileRootView()
@@ -23,7 +21,10 @@ struct RootView: View {
             }
         }
         .tint(settings.accent.color)
-        .onChange(of: settings.appearance, initial: true) { _, appearance in
+        .onAppear {
+            applyInterfaceStyle(settings.appearance.uiStyle)
+        }
+        .onChange(of: settings.appearance) { appearance in
             applyInterfaceStyle(appearance.uiStyle)
         }
         // Route explicit article opens through the in-app browser (or system).
@@ -47,8 +48,8 @@ struct RootView: View {
                 .ignoresSafeArea()
         }
         .fullScreenCover(isPresented: onboardingBinding) {
-            // Re-inject the Observation stores: presented views (full-screen
-            // cover / sheet) don't reliably inherit `@Observable` environment
+            // Re-inject the observable stores: presented views (full-screen
+            // cover / sheet) don't reliably inherit `ObservableObject` environment
             // objects across the presentation boundary, which crashed the
             // Mac Catalyst build on first launch (issue #1).
             OnboardingView()

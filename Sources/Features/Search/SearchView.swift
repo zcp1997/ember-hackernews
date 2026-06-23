@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SearchView: View {
-    @State private var vm = SearchViewModel()
+    @StateObject private var vm = SearchViewModel()
     @State private var path = NavigationPath()
 
     private let suggestions = ["Swift", "AI", "Rust", "Startups", "Security", "Apple", "Postgres"]

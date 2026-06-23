@@ -5,7 +5,7 @@ import SwiftUI
 struct CommentBlockView: View {
     let block: CommentBlock
 
-    @Environment(SettingsStore.self) private var settings
+    @EnvironmentObject private var settings: SettingsStore
 
     private var scale: CGFloat { CGFloat(settings.readingTextScale) }
     private var bodyFont: Font { .reader(15.5 * scale, .regular, relativeTo: .callout) }

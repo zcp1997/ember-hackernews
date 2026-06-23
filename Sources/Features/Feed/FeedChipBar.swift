@@ -7,7 +7,7 @@ struct FeedChipBar: View {
     let selection: Feed
     let onSelect: (Feed) -> Void
 
-    @Environment(SettingsStore.self) private var settings
+    @EnvironmentObject private var settings: SettingsStore
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -21,7 +21,7 @@ struct FeedChipBar: View {
                 .padding(.horizontal, Spacing.l)
                 .padding(.vertical, Spacing.m)
             }
-            .onChange(of: selection) { _, newValue in
+            .onChange(of: selection) { newValue in
                 withAnimation(.easeInOut) { proxy.scrollTo(newValue, anchor: .center) }
             }
         }

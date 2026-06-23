@@ -1,5 +1,5 @@
+import Combine
 import Foundation
-import Observation
 
 /// The selectable Hacker News feeds.
 enum HNFeed: String, CaseIterable, Identifiable {
@@ -135,12 +135,11 @@ struct IndexedStory {
 
 /// Drives the feed list.
 @MainActor
-@Observable
-public class FeedViewModel {
-    var feed: HNFeed = .top
-    var stories: [HNStory] = []
-    var isLoading = false
-    var errorMessage: String?
+public class FeedViewModel: ObservableObject {
+    @Published var feed: HNFeed = .top
+    @Published var stories: [HNStory] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String?
 
     private let pageSize = 25
 

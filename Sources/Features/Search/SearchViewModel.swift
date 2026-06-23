@@ -1,13 +1,12 @@
+import Combine
 import Foundation
-import Observation
 
 @MainActor
-@Observable
-final class SearchViewModel {
-    var query = ""
-    var mode: SearchMode = .relevance
-    private(set) var results: [HNItem] = []
-    private(set) var phase: SearchPhase = .idle
+final class SearchViewModel: ObservableObject {
+    @Published var query = ""
+    @Published var mode: SearchMode = .relevance
+    @Published private(set) var results: [HNItem] = []
+    @Published private(set) var phase: SearchPhase = .idle
 
     private let service: HNServicing
 

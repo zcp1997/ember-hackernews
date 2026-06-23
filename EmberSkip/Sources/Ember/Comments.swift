@@ -1,5 +1,5 @@
+import Combine
 import Foundation
-import Observation
 import SwiftUI
 
 /// A node from the Algolia `/items/{id}` endpoint (story + nested comment tree).
@@ -99,12 +99,11 @@ enum HTMLText {
 }
 
 @MainActor
-@Observable
-public class CommentsViewModel {
-    var comments: [FlatComment] = []
-    var isLoading = false
-    var loaded = false
-    var errorMessage: String?
+public class CommentsViewModel: ObservableObject {
+    @Published var comments: [FlatComment] = []
+    @Published var isLoading = false
+    @Published var loaded = false
+    @Published var errorMessage: String?
 
     public init() {}
 
@@ -122,7 +121,7 @@ public class CommentsViewModel {
 }
 
 struct CommentsSection: View {
-    let viewModel: CommentsViewModel
+    @ObservedObject var viewModel: CommentsViewModel
     let storyID: Int
 
     var body: some View {

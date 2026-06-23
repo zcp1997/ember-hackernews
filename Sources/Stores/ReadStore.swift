@@ -1,11 +1,10 @@
+import Combine
 import Foundation
-import Observation
 
 /// Tracks which stories have been opened so the feed can dim visited items.
 /// Backed by `UserDefaults`, bounded so it can't grow without limit.
-@Observable
-final class ReadStore {
-    private(set) var readIDs: Set<Int> = []
+final class ReadStore: ObservableObject {
+    @Published private(set) var readIDs: Set<Int> = []
 
     private let defaults: UserDefaults
     private let key = "read.storyIDs"
